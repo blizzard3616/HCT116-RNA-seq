@@ -56,37 +56,23 @@ cnames
 colnames(dt1_1)[-1] <- cnames
 colnames(dt1_1)
 
-
-
-
-
 # Read-in legend
-dt2 <- readxl::read_xlsx("./legend/RNA seq legend modified match feathercount.xlsx")
-dt2
+library(readxl)
+dt2 <- read_excel("./docs/HCT116 legend.xlsx")
 
 # Specify treatment groups
 mat <- data.frame(sample = cnames,
                   treatment = dt2$Description,
-                  trt = rep(rep(c("np", "pc", "ua", "sfn"), 
+                  trt = rep(rep(c("np", "peitc"), 
                                 each = 2),
-                            4),
-                  week = dt2$Time,
-                  time = factor(rep(c(1, 2, 3, 4), each = 8)),
-                  repl = factor(rep(1:16, each = 2)))
+                            1),
+                  time = factor(rep(c(1), each = 2)),
+                  repl = factor(rep(1, each = 2)))
 mat
 
 dtm <- as.matrix(dt1_1[, -1, with = FALSE])
 rownames(dtm) <- dt1_1$Geneid
-
-# Remove UA and Tumor fomr mat
-mat <- droplevels(mat[mat$trt != "ua", ])
-mat
-
-mat <- droplevels(mat[mat$week != "Tu", ])
-mat
-
-dtm <- dtm[, as.character(mat$sample)]
-dtm
+row.names(dtm)
 
 # Part I: build a DESeq2 data----
 dds <- DESeqDataSetFromMatrix(countData = dtm, 
